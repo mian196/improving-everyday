@@ -7,14 +7,14 @@ A modern, self-paced learning platform for DevOps engineers. 20 structured track
 ## Features
 
 - **20 learning tracks** organized from beginner to advanced, with modules and individual lessons
-- **Progress tracking** — lesson completion state saved automatically per profile
-- **Profile system** — create multiple learner profiles, each with their own progress
+- **Progress tracking** — lesson completion state saved automatically per profile, synced in the background to a local SQLite database
+- **Profile system** — create multiple learner profiles, each with their own progress, securely persisted on both client and server
 - **Module exams** — quiz-style assessments at the end of each module
 - **Notes** — attach personal notes to any lesson
 - **Full-text search** — search across all 20 tracks, modules, and lessons instantly
 - **Light / Dark mode** — toggle between themes from the top nav bar
 - **Lesson navigation** — prev/next lesson links within a track, breadcrumb navigation
-- **No backend required** — all data is stored in your browser (localStorage)
+- **Hybrid Persistent Storage** — all data is stored in your browser (`localStorage`) for instant, zero-latency loads, with an automated server-side SQLite database persistence layer to prevent progress loss when browser storage is cleared.
 
 ---
 
@@ -91,6 +91,14 @@ This installs all the libraries the project needs. It may take a minute.
 
 ```bash
 npm install
+```
+
+**3.5 Generate Prisma client**
+
+Generate the local database client query library:
+
+```bash
+npx prisma generate
 ```
 
 **4. Start the development server**
@@ -209,7 +217,8 @@ The app will be available at [http://localhost:3000](http://localhost:3000). The
 | [Next.js](https://nextjs.org) | React framework (App Router) |
 | TypeScript | Type-safe JavaScript |
 | Tailwind CSS | Styling |
-| localStorage | All data storage — no database needed |
+| localStorage / SQLite | Hybrid client-side and persistent SQLite database storage |
+| [Prisma](https://www.prisma.io) | Database ORM (object-relational mapper) |
 | React Context | State management for profiles and progress |
 | Lucide React | Icons |
 
