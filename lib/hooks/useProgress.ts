@@ -41,6 +41,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   // Re-load whenever the active profile changes (including on first mount)
   useEffect(() => {
     if (!profileId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProgress({});
       return;
     }
@@ -50,11 +51,14 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     try {
       const stored = localStorage.getItem(getKey(pid));
       if (stored) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setProgress(JSON.parse(stored));
       } else {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setProgress({});
       }
     } catch {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProgress({});
     }
 
@@ -69,7 +73,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
             return merged;
           });
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Failed to sync progress from SQLite DB:", err);
       }
     }
@@ -97,7 +101,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
         profileId,
         { trackId, moduleId, lessonId, completed: true, completedAt },
         activeProfile ? { name: activeProfile.name, avatar: activeProfile.avatar, bio: activeProfile.bio } : undefined
-      ).catch((err: any) => console.error("Error background saving progress entry:", err));
+      ).catch((err: unknown) => console.error("Error background saving progress entry:", err));
     },
     [profileId, activeProfile]
   );
@@ -118,7 +122,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
         profileId,
         { trackId, moduleId, lessonId, completed: false },
         activeProfile ? { name: activeProfile.name, avatar: activeProfile.avatar, bio: activeProfile.bio } : undefined
-      ).catch((err: any) => console.error("Error background saving progress entry:", err));
+      ).catch((err: unknown) => console.error("Error background saving progress entry:", err));
     },
     [profileId, activeProfile]
   );

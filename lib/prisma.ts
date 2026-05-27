@@ -13,7 +13,7 @@ if (dbUrl.startsWith("file:")) {
   const rawPath = dbUrl.substring(5);
   // Check if it's a relative path (does not start with a slash, a drive letter like C:/, or backslash)
   if (!rawPath.startsWith("/") && !rawPath.includes(":/") && !rawPath.includes(":\\")) {
-    const absolutePath = path.resolve(process.cwd(), rawPath).replace(/\\/g, "/");
+    const absolutePath = path.resolve(/*turbopackIgnore: true*/ process.cwd(), rawPath).replace(/\\/g, "/");
     dbUrl = `file:${absolutePath}`;
   }
 }
