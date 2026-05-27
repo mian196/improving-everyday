@@ -51,14 +51,11 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     try {
       const stored = localStorage.getItem(getKey(pid));
       if (stored) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setProgress(JSON.parse(stored));
       } else {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setProgress({});
       }
     } catch {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProgress({});
     }
 
@@ -172,6 +169,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
  * tracks the active profile automatically. It is kept for backwards
  * compatibility with existing call-sites.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function useProgress(_profileId?: string | null) {
   const ctx = useContext(ProgressContext);
   if (!ctx) throw new Error("useProgress must be used within ProgressProvider");

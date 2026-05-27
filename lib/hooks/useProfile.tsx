@@ -73,7 +73,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
 
         // Sync existing local profiles to database asynchronously
         for (const p of found) {
-          upsertProfile(p).catch((err: any) => console.error("Error background syncing profile to DB:", err));
+          upsertProfile(p).catch((err: unknown) => console.error("Error background syncing profile to DB:", err));
         }
       } else {
         // LocalStorage is empty. Try restoring profiles from SQLite DB!
@@ -90,7 +90,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
           } else {
             setProfiles([]);
           }
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error("Failed to restore profiles from SQLite DB:", err);
           setProfiles([]);
         } finally {
@@ -106,7 +106,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     setActiveProfileState(profile);
     localStorage.setItem(ACTIVE_KEY, profile.id);
     // Background sync to ensure it exists in the database
-    upsertProfile(profile).catch((err: any) => console.error("Error syncing active profile to DB:", err));
+    upsertProfile(profile).catch((err: unknown) => console.error("Error syncing active profile to DB:", err));
   }, []);
 
   const createProfile = useCallback((name: string, bio: string): Profile => {
@@ -124,7 +124,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
     });
 
     // Background sync to database
-    upsertProfile(newProfile).catch((err: any) => {
+    upsertProfile(newProfile).catch((err: unknown) => {
       console.error("Failed to sync new profile to DB:", err);
     });
 
@@ -149,7 +149,7 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       });
 
       // Sync deletion to DB
-      deleteProfileFromDb(id).catch((err: any) => {
+      deleteProfileFromDb(id).catch((err: unknown) => {
         console.error("Failed to delete profile from DB:", err);
       });
     },
