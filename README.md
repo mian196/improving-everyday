@@ -73,16 +73,22 @@ Before you start, make sure you have the following installed on your computer:
 
 **1. Clone the repository**
 
-This downloads the project code to your computer.
+This downloads the project code to your computer. Choose the option that matches your setup:
 
-```bash
-git clone https://github.com/<your-username>/devops-lms.git
-```
+* **Option A: Clone the original repository**
+  ```bash
+  git clone https://github.com/sooraj-sky/improving-everyday.git
+  ```
+
+* **Option B: Clone your own fork** (if you have forked the repository)
+  ```bash
+  git clone https://github.com/<your-username>/improving-everyday.git
+  ```
 
 **2. Enter the project folder**
 
 ```bash
-cd devops-lms
+cd improving-everyday
 ```
 
 **3. Install dependencies**
@@ -100,6 +106,11 @@ Generate the local database client query library:
 ```bash
 npx prisma generate
 ```
+
+> **Tip (Custom Databases):** The platform runs in zero-configuration SQLite mode by default. If you want to use a custom SQLite path or connect to a remote database (like PostgreSQL), copy `example.env` to `.env` and configure your `DATABASE_URL`:
+> ```bash
+> cp example.env .env
+> ```
 
 **4. Start the development server**
 
@@ -227,7 +238,7 @@ The app will be available at [http://localhost:3000](http://localhost:3000). The
 ## Project Structure
 
 ```
-devops-lms/
+improving-everyday/
 ├── app/                  # Pages and routes (Next.js App Router)
 ├── components/
 │   ├── layout/           # Sidebar, top nav, app shell
