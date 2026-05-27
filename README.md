@@ -138,12 +138,19 @@ Docker lets you run the app in a container without installing Node.js. This is t
 
 ### Option 1 — Pull the pre-built image from GitHub Container Registry
 
-If the project has been pushed to GitHub, you can pull the ready-made image directly:
+Choose the option that matches your setup:
 
-```bash
-docker pull ghcr.io/<github-username>/<repo-name>:latest
-docker run -p 3000:3000 ghcr.io/<github-username>/<repo-name>:latest
-```
+* **Option A: Pull the original pre-built image**
+  ```bash
+  docker pull ghcr.io/sooraj-sky/improving-everyday:latest
+  docker run -p 3000:3000 ghcr.io/sooraj-sky/improving-everyday:latest
+  ```
+
+* **Option B: Pull your own forked image** (if you build and push to your own registry)
+  ```bash
+  docker pull ghcr.io/<github-username>/improving-everyday:latest
+  docker run -p 3000:3000 ghcr.io/<github-username>/improving-everyday:latest
+  ```
 
 Then open [http://localhost:3000](http://localhost:3000).
 
@@ -153,10 +160,10 @@ If you've cloned the repository and want to build locally:
 
 ```bash
 # Build the image (this takes a few minutes the first time)
-docker build -t devops-lms .
+docker build -t improving-everyday .
 
 # Run the container
-docker run -p 3000:3000 devops-lms
+docker run -p 3000:3000 improving-everyday
 ```
 
 Then open [http://localhost:3000](http://localhost:3000).
@@ -168,13 +175,13 @@ To stop the container, press `Ctrl + C` in the terminal.
 If you want the container to keep running after you close the terminal:
 
 ```bash
-docker run -d -p 3000:3000 --name devops-lms devops-lms
+docker run -d -p 3000:3000 --name improving-everyday improving-everyday
 ```
 
 To stop it later:
 
 ```bash
-docker stop devops-lms
+docker stop improving-everyday
 ```
 
 ---
