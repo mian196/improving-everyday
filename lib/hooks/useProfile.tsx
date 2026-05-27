@@ -6,6 +6,8 @@ const CreateProfileModal = lazy(() =>
   import("@/components/CreateProfileModal").then((m) => ({ default: m.CreateProfileModal }))
 );
 
+import { upsertProfile, deleteProfileFromDb, getAllProfilesFromDb } from "@/app/actions/dbActions";
+
 export interface Profile {
   id: string;
   name: string;
@@ -58,19 +60,53 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const found = loadProfiles();
-    setProfiles(found);
+    async function initProfiles() {
+      const found = loadProfiles();
+      
+      if (found.length > 0) {
+        setProfiles(found);
+        const storedActiveId = localStorage.getItem(ACTIVE_KEY);
+        const active = found.find((p: Profile) => p.id === storedActiveId) ?? found[0] ?? null;
+        setActiveProfileState(active);
+        if (active) localStorage.setItem(ACTIVE_KEY, active.id);
+        setLoaded(true);
 
-    const storedActiveId = localStorage.getItem(ACTIVE_KEY);
-    const active = found.find((p) => p.id === storedActiveId) ?? found[0] ?? null;
-    setActiveProfileState(active);
-    if (active) localStorage.setItem(ACTIVE_KEY, active.id);
-    setLoaded(true);
+        // Sync existing local profiles to database asynchronously
+        for (const p of found) {
+          upsertProfile(p).catch((err: any) => console.error("Error background syncing profile to DB:", err));
+        }
+      } else {
+        // LocalStorage is empty. Try restoring profiles from SQLite DB!
+        try {
+          const res = await getAllProfilesFromDb();
+          if (res.success && res.profiles && res.profiles.length > 0) {
+            setProfiles(res.profiles);
+            saveProfiles(res.profiles);
+
+            const storedActiveId = localStorage.getItem(ACTIVE_KEY);
+            const active = res.profiles.find((p: Profile) => p.id === storedActiveId) ?? res.profiles[0] ?? null;
+            setActiveProfileState(active);
+            if (active) localStorage.setItem(ACTIVE_KEY, active.id);
+          } else {
+            setProfiles([]);
+          }
+        } catch (err: any) {
+          console.error("Failed to restore profiles from SQLite DB:", err);
+          setProfiles([]);
+        } finally {
+          setLoaded(true);
+        }
+      }
+    }
+
+    initProfiles();
   }, []);
 
   const setActiveProfile = useCallback((profile: Profile) => {
     setActiveProfileState(profile);
     localStorage.setItem(ACTIVE_KEY, profile.id);
+    // Background sync to ensure it exists in the database
+    upsertProfile(profile).catch((err: any) => console.error("Error syncing active profile to DB:", err));
   }, []);
 
   const createProfile = useCallback((name: string, bio: string): Profile => {
@@ -86,13 +122,19 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
       saveProfiles(updated);
       return updated;
     });
+
+    // Background sync to database
+    upsertProfile(newProfile).catch((err: any) => {
+      console.error("Failed to sync new profile to DB:", err);
+    });
+
     return newProfile;
   }, []);
 
   const deleteProfile = useCallback(
     (id: string) => {
       setProfiles((prev) => {
-        const updated = prev.filter((p) => p.id !== id);
+        const updated = prev.filter((p: Profile) => p.id !== id);
         saveProfiles(updated);
 
         // If we deleted the active profile, switch to the first remaining one
@@ -104,6 +146,11 @@ export function ProfileProvider({ children }: { children: React.ReactNode }) {
         }
 
         return updated;
+      });
+
+      // Sync deletion to DB
+      deleteProfileFromDb(id).catch((err: any) => {
+        console.error("Failed to delete profile from DB:", err);
       });
     },
     [activeProfile]

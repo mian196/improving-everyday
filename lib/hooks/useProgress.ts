@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useProfile } from "./useProfile";
 
+import { saveProgressEntry, getProgressForProfile } from "@/app/actions/dbActions";
+
 interface ProgressEntry {
   trackId: string;
   moduleId: string;
@@ -33,10 +35,6 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   const [progress, setProgress] = useState<Record<string, ProgressEntry>>(() => {
     // Synchronous initialisation — runs only on the client, avoids a blank flash
     if (typeof window === "undefined") return {};
-    try {
-      // We don't know the profileId yet at this point (ProfileProvider effect
-      // hasn't run), so we stay empty here and fill in the effect below.
-    } catch {}
     return {};
   });
 
@@ -46,28 +44,62 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
       setProgress({});
       return;
     }
+    const pid = profileId;
+
+    // 1. Initial Load from LocalStorage (Instant)
     try {
-      const stored = localStorage.getItem(getKey(profileId));
-      setProgress(stored ? JSON.parse(stored) : {});
+      const stored = localStorage.getItem(getKey(pid));
+      if (stored) {
+        setProgress(JSON.parse(stored));
+      } else {
+        setProgress({});
+      }
     } catch {
       setProgress({});
     }
+
+    // 2. Fetch and Merge from SQLite DB in background
+    async function syncFromDb() {
+      try {
+        const res = await getProgressForProfile(pid);
+        if (res.success && res.progress) {
+          setProgress((prev) => {
+            const merged = { ...prev, ...res.progress };
+            localStorage.setItem(getKey(pid), JSON.stringify(merged));
+            return merged;
+          });
+        }
+      } catch (err: any) {
+        console.error("Failed to sync progress from SQLite DB:", err);
+      }
+    }
+
+    syncFromDb();
   }, [profileId]);
 
   const markComplete = useCallback(
     (trackId: string, moduleId: string, lessonId: string) => {
       if (!profileId) return;
+      const completedAt = new Date().toISOString();
+      
       setProgress((prev) => {
         const key = `${trackId}:${moduleId}:${lessonId}`;
         const updated = {
           ...prev,
-          [key]: { trackId, moduleId, lessonId, completed: true, completedAt: new Date().toISOString() },
+          [key]: { trackId, moduleId, lessonId, completed: true, completedAt },
         };
         localStorage.setItem(getKey(profileId), JSON.stringify(updated));
         return updated;
       });
+
+      // Background DB Sync
+      saveProgressEntry(
+        profileId,
+        { trackId, moduleId, lessonId, completed: true, completedAt },
+        activeProfile ? { name: activeProfile.name, avatar: activeProfile.avatar, bio: activeProfile.bio } : undefined
+      ).catch((err: any) => console.error("Error background saving progress entry:", err));
     },
-    [profileId]
+    [profileId, activeProfile]
   );
 
   const markIncomplete = useCallback(
@@ -80,8 +112,15 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem(getKey(profileId), JSON.stringify(updated));
         return updated;
       });
+
+      // Background DB Sync
+      saveProgressEntry(
+        profileId,
+        { trackId, moduleId, lessonId, completed: false },
+        activeProfile ? { name: activeProfile.name, avatar: activeProfile.avatar, bio: activeProfile.bio } : undefined
+      ).catch((err: any) => console.error("Error background saving progress entry:", err));
     },
-    [profileId]
+    [profileId, activeProfile]
   );
 
   const isCompleted = useCallback(
