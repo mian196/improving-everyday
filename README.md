@@ -1,20 +1,20 @@
 # DevOps Learn
 
-A modern, self-paced learning platform for DevOps engineers. 20 structured tracks covering Linux, cloud, containers, CI/CD, security, and more — all running locally in the browser with no backend required.
+A self-paced DevOps learning platform with 20 tracks covering Linux, cloud, containers, CI/CD, security, and more. Everything runs locally in the browser with no backend required.
 
 ---
 
 ## Features
 
 - **20 learning tracks** organized from beginner to advanced, with modules and individual lessons
-- **Progress tracking** — lesson completion state saved automatically per profile, synced in the background to a local SQLite database
-- **Profile system** — create multiple learner profiles, each with their own progress, securely persisted on both client and server
-- **Module exams** — quiz-style assessments at the end of each module
-- **Notes** — attach personal notes to any lesson
-- **Full-text search** — search across all 20 tracks, modules, and lessons instantly
-- **Light / Dark mode** — toggle between themes from the top nav bar
-- **Lesson navigation** — prev/next lesson links within a track, breadcrumb navigation
-- **Hybrid Persistent Storage** — all data is stored in your browser (`localStorage`) for instant, zero-latency loads, with an automated server-side SQLite database persistence layer to prevent progress loss when browser storage is cleared.
+- **Progress tracking**: Lesson completion state is saved automatically per profile and synced in the background to a local SQLite database
+- **Profile system**: Support for multiple learner profiles, each with independent progress tracking, securely persisted on both client and server
+- **Module exams**: Quiz-style assessments to test your knowledge at the end of each module
+- **Notes**: Ability to attach personal notes to any lesson
+- **Full-text search**: Instant search across all 20 tracks, modules, and lessons
+- **Light / Dark mode**: Easy theme toggling from the top navigation bar
+- **Lesson navigation**: Previous/next links within a track and breadcrumb navigation
+- **Hybrid Persistent Storage**: All data is stored in your browser (`localStorage`) for instant, zero-latency loads, with an automated server-side SQLite database persistence layer to prevent progress loss when browser storage is cleared.
 
 ---
 
@@ -64,9 +64,9 @@ A modern, self-paced learning platform for DevOps engineers. 20 structured track
 
 Before you start, make sure you have the following installed on your computer:
 
-- **Node.js v18 or higher** — download from [nodejs.org](https://nodejs.org). Choose the "LTS" version if you're unsure.
+- **Node.js v18 or higher**: Download from [nodejs.org](https://nodejs.org) (LTS version is recommended)
   - To check if you already have it: open a terminal and run `node -v`
-- **Git** — download from [git-scm.com](https://git-scm.com)
+- **Git**: Download from [git-scm.com](https://git-scm.com)
   - To check if you already have it: run `git --version`
 
 ### Step-by-step setup
@@ -124,7 +124,7 @@ Open your browser and go to: [http://localhost:3000](http://localhost:3000)
 
 You'll be asked to create a learner profile on first launch. Enter any name and click **Get Started**.
 
-> **Tip:** The development server has hot reload — any changes you make to the code will appear in the browser instantly without needing to restart.
+> **Tip:** The development server supports hot reloading. Any changes you make to the code will appear in the browser instantly without restarting the server.
 
 ---
 
@@ -134,9 +134,9 @@ Docker lets you run the app in a container without installing Node.js. This is t
 
 ### What you need
 
-- **Docker Desktop** — download from [docker.com](https://www.docker.com/products/docker-desktop). Install it and make sure it's running (you'll see the Docker icon in your taskbar/menu bar).
+- **Docker Desktop**: Download from [docker.com](https://www.docker.com/products/docker-desktop) and ensure it is running
 
-### Option 1 — Pull the pre-built image from GitHub Container Registry
+### Option 1: Pull the pre-built image from GitHub Container Registry
 
 Choose the option that matches your setup:
 
@@ -154,7 +154,7 @@ Choose the option that matches your setup:
 
 Then open [http://localhost:3000](http://localhost:3000).
 
-### Option 2 — Build the image yourself
+### Option 2: Build the image yourself
 
 If you've cloned the repository and want to build locally:
 
@@ -263,7 +263,7 @@ improving-everyday/
 
 Each learning track is a single TypeScript file. To add your own:
 
-1. Create `lib/content/my-topic.ts` — copy the structure from any existing file like `lib/content/linux.ts`
+1. Create `lib/content/my-topic.ts` by copying the structure of an existing track, such as `lib/content/linux.ts`
 2. Import and add it to the `tracks` array in `lib/content/index.ts`
 3. Add a gradient colour class for the track card in `app/globals.css`
 
